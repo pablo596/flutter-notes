@@ -39,6 +39,7 @@ dependencies:
   provider: ^6.1.1
   arrow_path: ^3.1.0
   dio: ^5.4.0
+  dartdoc: ^8.0.3
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

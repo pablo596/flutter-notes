@@ -46,9 +46,9 @@ class NotasService with ChangeNotifier {
   Future newNote(String title, String description) async {
     final token = await _storage.read(key: 'token');
     final data = {'title': title, 'description': description};
-    var url = Uri.http(Environmet.apiURL, '/api/notas/new/');
+
     final resp = await http.post(
-      url,
+      Uri.https(Environmet.apiURL, 'api/notas/new'),
       body: jsonEncode(data),
       headers: {
         'Content-Type': 'application/json',
@@ -62,18 +62,25 @@ class NotasService with ChangeNotifier {
 
       return true;
     } else {
-      final respBody = jsonDecode(resp.body);
-      return respBody['msg'];
+      print(resp.statusCode);
+      print(resp.body);
+      // final respBody = jsonDecode(resp.body);
+      return false;
     }
   }
 
   Future updateNote(String title, String description, String uid) async {
     actualizacion = true;
     final token = await _storage.read(key: 'token');
-    final data = {'title': title, 'description': description, 'uid': uid};
-    var url = Uri.http(Environmet.apiURL, '/api/notas/update/');
-    final resp = await http.put(
-      url,
+    print(token);
+    Map<String, dynamic> data = {
+      'title': title,
+      'description': description,
+      'uid': uid
+    };
+
+    var resp = await http.put(
+      Uri.https(Environmet.apiURL, 'api/notas/update'),
       body: jsonEncode(data),
       headers: {
         'Content-Type': 'application/json',
@@ -87,8 +94,10 @@ class NotasService with ChangeNotifier {
       actualizacion = false;
       return true;
     } else {
-      final respBody = jsonDecode(resp.body);
-      return respBody['msg'];
+      print(resp.statusCode);
+      print(resp.body);
+      // final respBody = jsonDecode(resp.body);
+      return false;
     }
   }
 
@@ -96,9 +105,9 @@ class NotasService with ChangeNotifier {
     eliminacion = true;
     final token = await _storage.read(key: 'token');
     final data = {'uid': uid};
-    var url = Uri.http(Environmet.apiURL, '/api/notas/delete/');
+
     final resp = await http.delete(
-      url,
+      Uri.https(Environmet.apiURL, 'api/notas/delete'),
       body: jsonEncode(data),
       headers: {
         'Content-Type': 'application/json',
@@ -114,8 +123,10 @@ class NotasService with ChangeNotifier {
       notifyListeners();
       return true;
     } else {
-      final respBody = jsonDecode(resp.body);
-      return respBody['msg'];
+      print(resp.statusCode);
+      print(resp.body);
+      // final respBody = jsonDecode(resp.body);
+      return false;
     }
   }
 }

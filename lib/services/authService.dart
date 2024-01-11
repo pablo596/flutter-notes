@@ -36,37 +36,18 @@ class AuthService with ChangeNotifier {
 
   Future<bool> login(String email, String password) async {
     autenticando = true;
+    Map<String, dynamic> data = {'email': email, 'password': password};
 
-    final data = {'email': email, 'password': password};
-
-    var url = Uri.http(Environmet.apiURL, '/api/login/');
-
-    final resp = await http.post(
-      url,
+    var response = await http.post(
+      Uri.https(Environmet.apiURL, 'api/login'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: jsonEncode(data),
-      headers: {'Content-Type': 'application/json'},
     );
 
-    final getResponse = await http.post(
-        Uri.parse('https://notes-backed-utm.onrender.com/api/login/'),
-        body: data,
-        headers: {
-          'Content-Type': "application/json",
-        });
-    print(getResponse.body); //this is the expected response
-
-    autenticando = false;
-    print(resp.statusCode);
-    print(resp.body);
-    print(resp.headers);
-    print(resp.isRedirect);
-    print(resp.contentLength);
-    print(resp.persistentConnection);
-    print(resp.reasonPhrase);
-    print(resp.request);
-
-    if (resp.statusCode == 200) {
-      final loginResponse = loginResponseFromJson(resp.body);
+    if (response.statusCode == 200) {
+      final loginResponse = loginResponseFromJson(response.body);
 
       usuario = loginResponse.usuario!;
 
@@ -74,6 +55,8 @@ class AuthService with ChangeNotifier {
 
       return true;
     } else {
+      print(response.statusCode);
+      print(response.body);
       return false;
     }
   }
@@ -83,9 +66,9 @@ class AuthService with ChangeNotifier {
     try {
       autenticando = true;
       final data = {'nombre': nombre, 'email': email, 'password': password};
-      var url = Uri.http(Environmet.apiURL, '/api/login/new');
+
       final resp = await http.post(
-        url,
+        Uri.https(Environmet.apiURL, 'api/login/new'),
         body: jsonEncode(data),
         headers: {'Content-Type': 'application/json'},
       );
@@ -97,7 +80,9 @@ class AuthService with ChangeNotifier {
 
         return true;
       } else {
-        return {};
+        print(resp.statusCode);
+        print(resp.body);
+        return false;
       }
     } catch (e) {
       print(e);
@@ -105,24 +90,30 @@ class AuthService with ChangeNotifier {
   }
 
   Future<bool> isLoggedIn() async {
-    final token = await _storage.read(key: 'token');
+    try {
+      final token = await _storage.read(key: 'token');
 
-    var url = Uri.http(Environmet.apiURL, '/api/login/renew/');
+      var url = Uri.http(Environmet.apiURL, 'api/login/renew/');
 
-    final resp = await http.get(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-token': token != null ? token : '',
-      },
-    );
-    print(resp.statusCode);
-    if (resp.statusCode == 200) {
-      final loginResponse = loginResponseFromJson(resp.body);
-      usuario = loginResponse.usuario!;
-      await _guardarToken(loginResponse.token);
-      return true;
-    } else {
+      final resp = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'x-token': token != null ? token : '',
+        },
+      );
+
+      if (resp.statusCode == 200) {
+        final loginResponse = loginResponseFromJson(resp.body);
+        usuario = loginResponse.usuario!;
+        await _guardarToken(loginResponse.token);
+
+        return true;
+      } else {
+        logout();
+        return false;
+      }
+    } catch (e) {
       logout();
       return false;
     }

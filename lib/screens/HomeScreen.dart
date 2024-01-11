@@ -44,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void takeScreenshot() {
     if (ModalRoute.of(context)!.isCurrent) {
       print('toma la foto');
+      _cargarNotas();
     }
   }
 
@@ -174,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
           color: Color(0xFFd9d9d9),
           borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
-        height: 300,
+        // height: 100,/
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -199,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             Container(
               margin: const EdgeInsets.all(15),
-              height: MediaQuery.of(context).size.height * .175,
+              height: MediaQuery.of(context).size.height * .15,
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Column(

@@ -18,6 +18,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   TextEditingController _emailController = new TextEditingController();
   TextEditingController _edadController = new TextEditingController();
   TextEditingController _passController = new TextEditingController();
+  String _getAge(String date) {
+    if (date != null && date != '') {
+      return '${DateTime.now().difference(DateTime.parse(date)).inDays ~/ 365} años';
+    } else {
+      return '0 años';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +33,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _nameController.text = authService.usuario.nombre!;
     _emailController.text =
         authService.usuario.correo != null ? authService.usuario.correo! : '';
-
-    _edadController.text =
-        '${DateTime.now().difference(DateTime.parse(authService.usuario.date!)).inDays ~/ 365} años';
+    print(jsonEncode(authService.usuario));
+    _edadController.text = _getAge(
+        authService.usuario.date != null ? authService.usuario.date! : '');
+    // '${DateTime.now().difference(DateTime.parse(authService.usuario.date!)).inDays ~/ 365} años';
     _passController.text = authService.usuario.password != null
         ? authService.usuario.password!
         : '';
